@@ -67,6 +67,8 @@ public class MapActivity extends AppCompatActivity
     private static final double DEFAULT_RADIUS_METERS = 1000;
     private static final int CAMERA_ZOOM_LEVEL = 14;
 
+    private int GRANT_LOCATION = 0;
+
     private boolean mPermissionDenied = false;
     private GoogleMap mMap;
     private LocationManager lm;
@@ -92,7 +94,7 @@ public class MapActivity extends AppCompatActivity
         menuNFC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(mContext,NFCAuthenticateActivity.class);
+                Intent i = new Intent(mContext, NFCAuthenticateActivity.class);
                 startActivity(i);
             }
         });
@@ -167,7 +169,7 @@ public class MapActivity extends AppCompatActivity
     private void findNearRestroomByRadius(double r) {
         nearRestroomList = new ArrayList<RestroomItem>();
         int size = restroomList.size();
-        if(myLocationMarker == null)return;
+        if (myLocationMarker == null) return;
         LatLng myLatLng = myLocationMarker.getPosition();
         LatLng itemLatLng;
 
@@ -197,24 +199,29 @@ public class MapActivity extends AppCompatActivity
     }
 
     private void setLocationTracking() {
+        checkLocationPermission();
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 //        String provider = lm.getBestProvider(new Criteria(), false);
-
-        checkLocationPermission();
         //getKnownLocation 필요성
 
-        knownLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        //test
+        if(GRANT_LOCATION == 1) {
+            knownLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            //기본 로케이션 로드 버그 해결 코드
+            if (knownLocation == null) {
+                knownLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+            //test
 //        knownLocation.setLatitude(37.543847);
 //        knownLocation.setLongitude(126.960934);
-        //
+            //
 
-        getKnownLocation(knownLocation);
-
+            if (knownLocation != null) getKnownLocation(knownLocation);
+        }
         //
         myLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                knownLocation = location;
 //                Toast.makeText(mContext, location.getLatitude() + "|" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 LatLng myLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 myLocationMarker(myLatLng);
@@ -231,7 +238,7 @@ public class MapActivity extends AppCompatActivity
 
             @Override
             public void onProviderEnabled(String provider) {
-                Log.d("prozxc","onProviderEnabled, provider:" + provider);
+                Log.d("prozxc", "onProviderEnabled, provider:" + provider);
 
             }
 
@@ -241,13 +248,15 @@ public class MapActivity extends AppCompatActivity
             }
         };
 
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocationListener);
-
+        if (GRANT_LOCATION == 1) {
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocationListener);
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, myLocationListener);
+        }
 
     }
 
     private void getKnownLocation(Location knownLocation) {
-        if(knownLocation == null) return;
+        if (knownLocation == null) return;
         LatLng knownLatLng = new LatLng(knownLocation.getLatitude(), knownLocation.getLongitude());
         myLocationMarker(knownLatLng);
         //circle
@@ -262,6 +271,9 @@ public class MapActivity extends AppCompatActivity
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     0);
+            GRANT_LOCATION = 0;
+        } else {
+            GRANT_LOCATION = 1;
         }
     }
 
@@ -285,6 +297,7 @@ public class MapActivity extends AppCompatActivity
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
+
         enableMyLocation();
         setLocationTracking();
         //
@@ -297,10 +310,14 @@ public class MapActivity extends AppCompatActivity
         findMyLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (knownLocation == null) return;
                 LatLng knownLatLng = new LatLng(knownLocation.getLatitude(), knownLocation.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(knownLatLng));
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(knownLatLng, CAMERA_ZOOM_LEVEL);
                 mMap.moveCamera(cameraUpdate);
+                findNearRestroomByRadius(DEFAULT_RADIUS_METERS);
+                markerAllClear();
+                drawMarkerFromNearList();
             }
         });
 
@@ -316,16 +333,16 @@ public class MapActivity extends AppCompatActivity
         });
     }
 
-    public void drawMarkerFromNearList(){
+    public void drawMarkerFromNearList() {
         int size = nearRestroomList.size();
-        Log.i("drawsize",size + "");
-        for(int i = 0; i < size; i++) {
+        Log.i("drawsize", size + "");
+        for (int i = 0; i < size; i++) {
             drawMarker(nearRestroomList.get(i));
         }
     }
 
-    private void drawMarker(RestroomItem item){
-        LatLng position = new LatLng(item.getLat(),item.getLng());
+    private void drawMarker(RestroomItem item) {
+        LatLng position = new LatLng(item.getLat(), item.getLng());
 
         Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(position)
@@ -335,9 +352,9 @@ public class MapActivity extends AppCompatActivity
         markerManager.add(marker);
     }
 
-    private void markerAllClear(){
+    private void markerAllClear() {
         int size = markerManager.size();
-        for(int i = 0 ; i < size; i++){
+        for (int i = 0; i < size; i++) {
             Marker marker = markerManager.get(i);
             marker.remove();
         }
@@ -347,11 +364,11 @@ public class MapActivity extends AppCompatActivity
     @Override
     public boolean onMarkerClick(Marker marker) {
         //"Me"
-        if(marker.getSnippet() != null) return true;
-        RestroomItem item = (RestroomItem)marker.getTag();
+        if (marker.getSnippet() != null) return true;
+        RestroomItem item = (RestroomItem) marker.getTag();
         Intent i = new Intent(mContext, DetailRestroomActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("item",item);
+        bundle.putSerializable("item", item);
         i.putExtras(bundle);
         startActivity(i);
         return true;
@@ -370,7 +387,7 @@ public class MapActivity extends AppCompatActivity
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Log.d("onMyLocationButtonClick","gogogo");
+        Log.d("onMyLocationButtonClick", "gogogo");
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         String provider = lm.getBestProvider(new Criteria(), false);
         checkLocationPermission();
@@ -389,6 +406,13 @@ public class MapActivity extends AppCompatActivity
 
         if (PermissionUtils.isPermissionGranted(permissions, grantResults,
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
+            GRANT_LOCATION = 1;
+            if (GRANT_LOCATION == 1) {
+                checkLocationPermission();
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocationListener);
+                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, myLocationListener);
+                drawMarkerFromNearList();
+            }
             enableMyLocation();
         } else {
             mPermissionDenied = true;

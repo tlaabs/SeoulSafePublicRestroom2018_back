@@ -21,7 +21,7 @@ public class ReportItem {
         this.img = get.getImg();
 
         Date date = new Date(Long.parseLong(get.getUpdatedate().trim()));
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         this.updatedate = sdf.format(date);
     }

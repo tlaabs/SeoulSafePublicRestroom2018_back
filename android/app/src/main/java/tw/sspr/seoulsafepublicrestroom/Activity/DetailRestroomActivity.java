@@ -116,7 +116,8 @@ public class DetailRestroomActivity extends AppCompatActivity {
                 stateView.setText(res.getState());
 
                 Date date = new Date(Long.parseLong(res.getUpdatedate().trim()));
-                SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+                //Java7 YYYY format error
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
                 dateView.setText(sdf.format(date));
 
