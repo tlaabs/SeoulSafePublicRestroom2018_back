@@ -3,26 +3,26 @@
 
 <mapper namespace="com.sspr.mappers.ReportMapper">
 
-	<insert id="insertReport">
+	<insert id="insert">
 		insert into tbl_report
 		(restroom_id,writer,pwd,msg,img,updatedate) values
 		(#{restroom_id}, #{writer}, #{pwd}, #{msg}, #{img}, now())
 	</insert>
 	
-	<select id="readReports"  resultType="ReportVO">
+	<select id="readMany"  resultType="ReportVO">
 	select report_id,restroom_id,writer,msg,img,updatedate from
 	tbl_report
 	where restroom_id = #{restroom_id}
 	order by report_id desc
 	</select>
 	
-	<select id="readReport"  resultType="ReportVO">
+	<select id="readOne"  resultType="ReportVO">
 	select report_id,restroom_id,writer,msg,img,updatedate from
 	tbl_report
 	where report_id = #{report_id}
 	</select>
 	
-	<delete id="deleteReport">
+	<delete id="delete">
 	delete from tbl_report
 	where report_id = #{report_id}
 	and pwd = #{pwd}

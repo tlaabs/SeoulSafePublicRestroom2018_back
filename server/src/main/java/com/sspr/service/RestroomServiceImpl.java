@@ -14,21 +14,21 @@ public class RestroomServiceImpl implements RestroomService{
 	private RestroomDAO dao;
 	
 	@Override
-	public RestroomVO read(String id) {
+	public RestroomVO readRestroom(String id) {
 		// TODO Auto-generated method stub
-		return dao.readRestroom(id);
+		return dao.read(id);
 	}
 
 	@Override
-	public void insert(RestroomVO vo) {
+	public void insertRestroom(RestroomVO vo) {
 		// TODO Auto-generated method stub
-		dao.insertRestroom(vo);
+		dao.insert(vo);
 	}
 
 	@Override
-	public void update(RestroomVO vo) {
+	public void updateRestroom(RestroomVO vo) {
 		// TODO Auto-generated method stub
-		dao.updateRestroom(vo);
+		dao.update(vo);
 	}
 	
 }

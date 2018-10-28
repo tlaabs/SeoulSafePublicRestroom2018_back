@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.FileCopyUtils;
 
+//파일 관리 유틸
 public class UploadFileUtils {
 	private static final Logger logger =
 			LoggerFactory.getLogger(UploadFileUtils.class);
@@ -23,8 +24,7 @@ public class UploadFileUtils {
 		UUID uid = UUID.randomUUID();
 		
 		String savedName = uid.toString() + "_" + originalName;
-		
-//		String savedPath = calPath(uploadPath);
+
 		String savedPath = "";
 		
 		File target = new File(uploadPath + savedPath, savedName);
@@ -35,17 +35,11 @@ public class UploadFileUtils {
 		
 		String uploadedFileName = null;
 		
-//		if(MediaUtils.getMediaType(formatName) != null){
-//			uploadedFileName = makeThumbnail(uploadPath, savedPath, savedName);
-//		}else{
-//			uploadedFileName = makeIcon(uploadPath, savedPath, savedName);
-//		}
-		
-//		return uploadedFileName;
 		uploadedFileName = makeIcon(uploadPath, savedPath, savedName);
 		return uploadedFileName;
 	}
 	
+	//경로 계산
 	private static String calPath(String uploadPath){
 		Calendar cal = Calendar.getInstance();
 		
@@ -64,6 +58,7 @@ public class UploadFileUtils {
 		return datePath;
 	}
 	
+	//디렉토리 생성
 	private static void makeDir(String uploadPath, String... paths){
 		if(new File(paths[paths.length-1]).exists()){
 			return;
@@ -78,6 +73,7 @@ public class UploadFileUtils {
 		}
 	}
 	
+	//썸네일 생성
 	private static String makeThumbnail(
 			String uploadPath,
 			String path,
@@ -87,11 +83,6 @@ public class UploadFileUtils {
 		BufferedImage sourceImg =
 				ImageIO.read(new File(uploadPath + path, fileName));
 		
-//		BufferedImage destImg =
-//				Scalr.resize(
-//						sourceImg,
-//						Scalr.Method.AUTOMATIC,
-//						Scalr.Mode.FIT_TO_HEIGHT, 100);
 		BufferedImage destImg = sourceImg;
 		
 		String thumbnailName =

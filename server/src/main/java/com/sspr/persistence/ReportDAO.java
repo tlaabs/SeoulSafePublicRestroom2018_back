@@ -5,9 +5,9 @@ import java.util.List;
 import com.sspr.domain.ReportVO;
 
 public interface ReportDAO {
-	public void insertReport(ReportVO vo);
-	public List<ReportVO> readReports(String restroom_id);
-	public ReportVO readReport(String report_id);
-	public void deleteReport(ReportVO vo);
+	public void insert(ReportVO vo);
+	public List<ReportVO> readMany(String restroom_id);
+	public ReportVO readOne(String report_id);
+	public void delete(ReportVO vo);
 	
 }

@@ -3,6 +3,7 @@ package com.sspr.util;
 import java.io.File;
 
 public class FileManager {
+	//파일 삭제
 	public static void delete(String uploadPath, String img_src){
 		String des = uploadPath + getName(img_src);
 		File file = new File(des);

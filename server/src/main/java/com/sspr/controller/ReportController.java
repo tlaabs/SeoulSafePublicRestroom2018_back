@@ -52,11 +52,7 @@ public class ReportController {
 		String url = UploadFileUtils.uploadFile(uploadPath,
 				file.getOriginalFilename(),
 				file.getBytes());
-
-		System.out.println(file.getOriginalFilename());
-		System.out.println(uploadPath + url);
-		System.out.println(restroom_id +"|" +writer+"|" +pwd+"|" +msg);
-
+		
 		ReportVO report = new ReportVO();
 		report.setRestroom_id(restroom_id);
 		report.setWriter(writer);
@@ -65,7 +61,7 @@ public class ReportController {
 
 		report.setImg(SERVER_STORAGE_URL+url);
 
-		reportService.insert(report);
+		reportService.insertReport(report);
 
 		return file.getOriginalFilename();
 	}
@@ -73,7 +69,6 @@ public class ReportController {
 	@RequestMapping(value="get", method=RequestMethod.GET)
 	public List<ReportVO> readReports(@RequestParam String restroom_id){
 		List<ReportVO> results = reportService.readReports(restroom_id);
-		System.out.println("size : " + results.size());
 		return results;
 	}
 
@@ -82,7 +77,7 @@ public class ReportController {
 		ReportVO item = reportService.readReport(vo.getReport_id());
 		if(item != null){
 			FileManager.delete(uploadPath, item.getImg());
-			reportService.delete(vo);
+			reportService.deleteReport(vo);
 		}
 	}
 

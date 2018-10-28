@@ -17,23 +17,23 @@ public class RestroomDAOImpl implements RestroomDAO{
 			"com.sspr.mappers.RestroomMapper";
 	
 	@Override
-	public RestroomVO readRestroom(String id) {
+	public RestroomVO read(String id) {
 		// TODO Auto-generated method stub
-		RestroomVO vo = sqlSession.selectOne(namespace+".readRestrrom",id);
+		RestroomVO vo = sqlSession.selectOne(namespace+".read",id);
 		return vo;
 	}
 
 	@Override
-	public void insertRestroom(RestroomVO vo) {
+	public void insert(RestroomVO vo) {
 		// TODO Auto-generated method stub
-		sqlSession.insert(namespace+".insertRestroom",vo);
+		sqlSession.insert(namespace+".insert",vo);
 		
 	}
 
 	@Override
-	public void updateRestroom(RestroomVO vo) {
+	public void update(RestroomVO vo) {
 		// TODO Auto-generated method stub
-		sqlSession.update(namespace+".updateRestroom",vo);
+		sqlSession.update(namespace+".update",vo);
 	}
 
 }

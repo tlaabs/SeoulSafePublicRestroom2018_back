@@ -21,33 +21,33 @@ public class ReportDAOImpl implements ReportDAO{
 			"com.sspr.mappers.ReportMapper";
 	
 	@Override
-	public void insertReport(ReportVO vo) {
+	public void insert(ReportVO vo) {
 		// TODO Auto-generated method stub
-		sqlSession.insert(namespace + ".insertReport",vo);
+		sqlSession.insert(namespace + ".insert",vo);
 		
 	}
 
 	@Override
-	public List<ReportVO> readReports(String restroom_id) {
+	public List<ReportVO> readMany(String restroom_id) {
 		// TODO Auto-generated method stub
-		return sqlSession.selectList(namespace + ".readReports", restroom_id);
+		return sqlSession.selectList(namespace + ".readMany", restroom_id);
 	}
 	
 	
 
 	@Override
-	public ReportVO readReport(String report_id) {
+	public ReportVO readOne(String report_id) {
 		// TODO Auto-generated method stub
-		return sqlSession.selectOne(namespace + ".readReport", report_id);
+		return sqlSession.selectOne(namespace + ".readOne", report_id);
 	}
 
 	@Override
-	public void deleteReport(ReportVO vo) {
+	public void delete(ReportVO vo) {
 		// TODO Auto-generated method stub
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("report_id", vo.getReport_id());
 		map.put("pwd", vo.getPwd());
-		sqlSession.delete(namespace + ".deleteReport", map);
+		sqlSession.delete(namespace + ".delete", map);
 	}
 	
 	
